@@ -1,8 +1,12 @@
-#  Xcdat: Fast compressed trie dictionary library
+# Xcdat: Fast compressed trie dictionary library
 
-![](https://github.com/kampersanda/xcdat/actions/workflows/cmake.yml/badge.svg)
+![build status](https://github.com/kampersanda/xcdat/actions/workflows/build.yml/badge.svg)
 
-**Xcdat** is a C++17 header-only library of a fast compressed string dictionary based on an improved double-array trie structure described in the paper: [Compressed double-array tries for string dictionaries supporting fast lookup](https://doi.org/10.1007/s10115-016-0999-8), *Knowledge and Information Systems*, 2017, available [here](https://kampersanda.github.io/pdf/KAIS2017.pdf).
+**Xcdat** is a C++17 header-only library of a fast compressed string dictionary
+based on an improved double-array trie structure described in the paper:
+[Compressed double-array tries for string dictionaries supporting fast lookup](https://doi.org/10.1007/s10115-016-0999-8),
+_Knowledge and Information Systems_, 2017, available
+[here](https://kampersanda.github.io/pdf/KAIS2017.pdf).
 
 ## Table of contents
 
@@ -18,52 +22,98 @@
 
 ## Features
 
-- **Compressed string dictionary.** Xcdat implements a (static) *compressed string dictioanry* that stores a set of strings (or keywords) in a compressed space while supporting several search operations [1,2]. For example, Xcdat can store an entire set of English Wikipedia titles at half the size of the raw data. (See [Performance](#performance))
-- **Fast and compact data structure.** Xcdat employs the *double-array trie* [3] known as the fastest trie implementation. However, the double-array trie resorts to many pointers and consumes a large amount of memory. To address this, Xcdat applies the *XCDA* method [2] that represents the double-array trie in a compressed format while maintaining the fast searches.
-- **Cache efficiency.** Xcdat employs a *minimal-prefix trie* [4] that replaces redundant trie nodes into strings to reduce random access and to improve locality of references.
-- **Dictionary encoding.** Xcdat maps `N` distinct keywords into unique IDs from `[0,N-1]`, and supports the two symmetric operations: `lookup` returns the ID corresponding to a given keyword; `decode` returns the keyword associated with a given ID. The mapping is so-called *dictionary encoding* (or *domain encoding*) and is fundamental in many DB applications as described by Martínez-Prieto et al [1] or Müller et al. [5].
-- **Prefix search operations.** Xcdat supports prefix search operations realized by trie search algorithms: `prefix_search` returns all the keywords contained as prefixes of a given string; `predictive search` returns all the keywords starting with a given string. These will be useful in many NLP applications such as auto completions [6], stemmed searches [7], or input method editors [8].
-- **64-bit support.** As mentioned before, since the double array is a pointer-based data structure, most double-array libraries use 32-bit pointers to reduce memory consumption, resulting in limiting the scale of the input dataset. On the other hand, the XCDA method allows Xcdat to represent 64-bit pointers without sacrificing memory efficiency.
-- **Binary key support.** In normal mode, Xcdat will use the `\0` character as an end marker for each keyword. However, if the dataset include `\0` characters, it will use bit flags instead of end markers, allowing the dataset to consist of binary keywords.
-- **Memory mapping.** Xcdat supports *memory mapping*, allowing data to be deserialized quickly without loading it into memory. Of course, deserialization by the loading is also supported.
-- **Header only.** The library consists only of header files, and you can easily install it.
-- **Python binding.** You can use Xcdat in Python3 via [pybind11](https://github.com/pybind/pybind11). (Visit the directory [pybind](https://github.com/kampersanda/xcdat/tree/master/pybind))
+- **Compressed string dictionary.** Xcdat implements a (static) _compressed
+  string dictioanry_ that stores a set of strings (or keywords) in a compressed
+  space while supporting several search operations [1,2]. For example, Xcdat can
+  store an entire set of English Wikipedia titles at half the size of the raw
+  data. (See [Performance](#performance))
+- **Fast and compact data structure.** Xcdat employs the _double-array trie_ [3]
+  known as the fastest trie implementation. However, the double-array trie
+  resorts to many pointers and consumes a large amount of memory. To address
+  this, Xcdat applies the _XCDA_ method [2] that represents the double-array
+  trie in a compressed format while maintaining the fast searches.
+- **Cache efficiency.** Xcdat employs a _minimal-prefix trie_ [4] that replaces
+  redundant trie nodes into strings to reduce random access and to improve
+  locality of references.
+- **Dictionary encoding.** Xcdat maps `N` distinct keywords into unique IDs from
+  `[0,N-1]`, and supports the two symmetric operations: `lookup` returns the ID
+  corresponding to a given keyword; `decode` returns the keyword associated with
+  a given ID. The mapping is so-called _dictionary encoding_ (or _domain
+  encoding_) and is fundamental in many DB applications as described by
+  Martínez-Prieto et al [1] or Müller et al. [5].
+- **Prefix search operations.** Xcdat supports prefix search operations realized
+  by trie search algorithms: `prefix_search` returns all the keywords contained
+  as prefixes of a given string; `predictive search` returns all the keywords
+  starting with a given string. These will be useful in many NLP applications
+  such as auto completions [6], stemmed searches [7], or input method editors
+  [8].
+- **64-bit support.** As mentioned before, since the double array is a
+  pointer-based data structure, most double-array libraries use 32-bit pointers
+  to reduce memory consumption, resulting in limiting the scale of the input
+  dataset. On the other hand, the XCDA method allows Xcdat to represent 64-bit
+  pointers without sacrificing memory efficiency.
+- **Binary key support.** In normal mode, Xcdat will use the `\0` character as
+  an end marker for each keyword. However, if the dataset include `\0`
+  characters, it will use bit flags instead of end markers, allowing the dataset
+  to consist of binary keywords.
+- **Memory mapping.** Xcdat supports _memory mapping_, allowing data to be
+  deserialized quickly without loading it into memory. Of course,
+  deserialization by the loading is also supported.
+- **Header only.** The library consists only of header files, and you can easily
+  install it.
+- **Python binding.** You can use Xcdat in Python3 via
+  [pybind11](https://github.com/pybind/pybind11). (Visit the directory
+  [pybind](https://github.com/kampersanda/xcdat/tree/master/pybind))
 
 ## Build instructions
 
-You can download, compile, and install Xcdat with the following commands.
+You can download, compile, and install Xcdat with the following commands using
+Meson.
 
 ```sh
 $ git clone https://github.com/kampersanda/xcdat.git
 $ cd xcdat
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make -j
-$ make install
+$ meson setup builddir
+$ meson compile -C builddir
+$ meson install -C builddir
 ```
 
-Or, since this library consists only of header files, you can easily install it by passing the include path to the directory `include`.
+Or, since this library consists only of header files, you can easily install it
+by passing the include path to the directory `include`.
 
 ### Requirements
 
-You need to install a modern C++17 ready compiler such as `g++ >= 7.0` or `clang >= 4.0`. For the build system, you need to install `CMake >= 3.0` to compile the library.
+You need to install a modern C++17 ready compiler such as `g++ >= 7.0` or
+`clang >= 4.0`. For the build system, you need to install `Meson >= 0.60` to
+compile the library.
 
-The library requires that `std::uint64_t` exists. (This is true for nearly any target, even 32-bit ones.) The code has been tested only on Mac OS X and Linux. That is, this library considers only UNIX-compatible OS.
+The library requires that `std::uint64_t` exists. (This is true for nearly any
+target, even 32-bit ones.) The code has been tested only on Mac OS X and Linux.
+That is, this library considers only UNIX-compatible OS.
 
 ### Python binding
 
-Xcdat supports the Python binding via [pybind11](https://github.com/pybind/pybind11). The description can be found in the directory [pybind](https://github.com/kampersanda/xcdat/tree/master/pybind).
+Xcdat supports the Python binding via
+[pybind11](https://github.com/pybind/pybind11). The description can be found in
+the directory [pybind](https://github.com/kampersanda/xcdat/tree/master/pybind).
 
 ## Command line tools
 
- Xcdat provides command line tools to build the dictionary and perform searches, which are inspired by [marisa-trie](https://github.com/s-yata/marisa-trie). All the tools will print the command line options by specifying the parameter `-h`.
+Xcdat provides command line tools to build the dictionary and perform searches,
+which are inspired by [marisa-trie](https://github.com/s-yata/marisa-trie). All
+the tools will print the command line options by specifying the parameter `-h`.
 
-The tools employ the external libraries [cmd_line_parser](https://github.com/jermp/cmd_line_parser), [mm_file](https://github.com/jermp/mm_file), and [tinyformat](https://github.com/c42f/tinyformat), which are contained in the repository.
+The tools employ the external libraries
+[cmd_line_parser](https://github.com/jermp/cmd_line_parser),
+[mm_file](https://github.com/jermp/mm_file), and
+[tinyformat](https://github.com/c42f/tinyformat), which are contained in the
+repository.
 
 ### `xcdat_build`
 
-It builds the trie dictionary from a given dataset consisting of keywords separated by newlines. The following command builds the trie dictionary from dataset `enwiki-titles.txt` and writes the dictionary into file `dic.bin`.
+It builds the trie dictionary from a given dataset consisting of keywords
+separated by newlines. The following command builds the trie dictionary from
+dataset `enwiki-titles.txt` and writes the dictionary into file `dic.bin`.
 
 ```
 $ xcdat_build enwiki-titles.txt dic.bin
@@ -76,7 +126,8 @@ Memory usage in MiB: 156.502
 
 ### `xcdat_lookup`
 
-It tests the `lookup` operation for a given dictionary. Given a query string via `stdin`, it prints the associated ID if found, or `-1` otherwise.
+It tests the `lookup` operation for a given dictionary. Given a query string via
+`stdin`, it prints the associated ID if found, or `-1` otherwise.
 
 ```
 $ xcdat_lookup dic.bin
@@ -88,7 +139,9 @@ Double_Array
 
 ### `xcdat_decode`
 
-It tests the `decode` operation for a given dictionary. Given a query ID via `stdin`, it prints the corresponding keyword if the ID is in the range `[0,N-1]`, where `N` is the number of stored keywords.
+It tests the `decode` operation for a given dictionary. Given a query ID via
+`stdin`, it prints the corresponding keyword if the ID is in the range
+`[0,N-1]`, where `N` is the number of stored keywords.
 
 ```
 $ xcdat_decode dic.bin
@@ -98,7 +151,9 @@ $ xcdat_decode dic.bin
 
 ### `xcdat_prefix_search`
 
-It tests the `prefix_search` operation for a given dictionary. Given a query string via `stdin`, it prints all the keywords contained as prefixes of a given string.
+It tests the `prefix_search` operation for a given dictionary. Given a query
+string via `stdin`, it prints all the keywords contained as prefixes of a given
+string.
 
 ```
 $ xcdat_prefix_search dic.bin
@@ -114,7 +169,9 @@ Algorithmic
 
 ### `xcdat_predictive_search`
 
-It tests the `predictive_search` operation for a given dictionary. Given a query string via `stdin`, it prints the first `n` keywords starting with a given string, where `n` is one of the parameters.
+It tests the `predictive_search` operation for a given dictionary. Given a query
+string via `stdin`, it prints the first `n` keywords starting with a given
+string, where `n` is one of the parameters.
 
 ```
 $ xcdat_predictive_search dic.bin -n 3
@@ -138,7 +195,10 @@ $ xcdat_enumerate dic.bin | head -3
 
 ### `xcdat_benchmark`
 
-Xcdat provides the four dictionary types defined in `xcdat.hpp`. The tool measures the performances of them for a given dataset. To perform search operations, it randomly samples `n` queires from the dataset, where `n` is one of the parameters. It will help you determine the dictionary type.
+Xcdat provides the four dictionary types defined in `xcdat.hpp`. The tool
+measures the performances of them for a given dataset. To perform search
+operations, it randomly samples `n` queires from the dataset, where `n` is one
+of the parameters. It will help you determine the dictionary type.
 
 ```
 $ xcdat_benchmark enwiki-titles.txt
@@ -316,11 +376,14 @@ Enumerate() = {
 
 ## API
 
-Xcdat consists of only the header files and can be used by including only the header `xcdat.hpp`. Also, it uses `namespace xcdat`.
+Xcdat consists of only the header files and can be used by including only the
+header `xcdat.hpp`. Also, it uses `namespace xcdat`.
 
 ### Trie dictionary types
 
-The four specialization types of class `xcdat::trie` are provided in `xcdat.hpp`. The first two types are based on standard DACs by Brisaboa et al. [9]. The last two types are based on pointer-based DACs by Kanda et al. [2].
+The four specialization types of class `xcdat::trie` are provided in
+`xcdat.hpp`. The first two types are based on standard DACs by Brisaboa et al.
+[9]. The last two types are based on pointer-based DACs by Kanda et al. [2].
 
 ```c++
 //! The trie type with standard DACs using 8-bit integers
@@ -519,7 +582,8 @@ std::uint32_t get_type_id(const std::string& filepath);
 
 ### Exception class
 
-If an error occurs in a construction or I/O operation, Xcdat will throw an instance of  `xcdat::exception` as a runtime error.
+If an error occurs in a construction or I/O operation, Xcdat will throw an
+instance of `xcdat::exception` as a runtime error.
 
 ```c++
 class exception : public std::exception {
@@ -531,26 +595,38 @@ class exception : public std::exception {
 
 ## Performance
 
-We compared the performance of Xcdat with those of other selected dictionary libraries written in C++.
+We compared the performance of Xcdat with those of other selected dictionary
+libraries written in C++.
 
 ### Implementations
 
 - Our compressed double-array tries [2]
-  - [xcdat<8>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp): `xcdat::trie_8_type`
-  - [xcdat<16>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp): `xcdat::trie_16_type`
-  - [xcdat<7>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp): `xcdat::trie_7_type`
-  - [xcdat<15>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp): `xcdat::trie_15_type`
+  - [xcdat<8>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp):
+    `xcdat::trie_8_type`
+  - [xcdat<16>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp):
+    `xcdat::trie_16_type`
+  - [xcdat<7>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp):
+    `xcdat::trie_7_type`
+  - [xcdat<15>](https://github.com/kampersanda/xcdat/blob/master/include/xcdat.hpp):
+    `xcdat::trie_15_type`
 - Other double-array tries
   - [darts](http://chasen.org/~taku/software/darts/): Double-array trie [3].
-  - [darts-clone](https://github.com/s-yata/darts-clone): Compact double-array trie [4].
-  - [cedar](http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/cedar/): Dynamic double-array reduced trie [10,11]
-  - [cedarpp](http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/cedar/): Dynamic double-array prefix trie [10,11]
-  - [dastrie](http://www.chokkan.org/software/dastrie/): Compact double-array prefix trie [4]
+  - [darts-clone](https://github.com/s-yata/darts-clone): Compact double-array
+    trie [4].
+  - [cedar](http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/cedar/): Dynamic
+    double-array reduced trie [10,11]
+  - [cedarpp](http://www.tkl.iis.u-tokyo.ac.jp/~ynaga/cedar/): Dynamic
+    double-array prefix trie [10,11]
+  - [dastrie](http://www.chokkan.org/software/dastrie/): Compact double-array
+    prefix trie [4]
 - Succinct tries
   - [tx](https://github.com/hillbig/tx-trie): LOUDS trie [12]
-  - [marisa](https://github.com/s-yata/marisa-trie): LOUDS nested patricia trie [13]
-  - [fst](https://github.com/kampersanda/fast_succinct_trie): Fast succinct prefix trie [14]
-  - [pdt](https://github.com/ot/path_decomposed_tries): Centroid path-decomposed trie with RePair [15]
+  - [marisa](https://github.com/s-yata/marisa-trie): LOUDS nested patricia trie
+    [13]
+  - [fst](https://github.com/kampersanda/fast_succinct_trie): Fast succinct
+    prefix trie [14]
+  - [pdt](https://github.com/ot/path_decomposed_tries): Centroid path-decomposed
+    trie with RePair [15]
 - Tessil's string containers
   - [hat-trie](https://github.com/Tessil/hat-trie/): HAT-trie [16]
   - [array-hash](https://github.com/Tessil/array-hash): Array hashing [17]
@@ -567,19 +643,30 @@ We compared the performance of Xcdat with those of other selected dictionary lib
 ### Datasets
 
 - Natural language corpus
-  - **IPA:** 325,871 different Japanese words from [IPAdic](https://taku910.github.io/mecab/) (3.7 MiB, 11.9 bytes/key)
-  - **Wiki:** 14,130,439 different [English Wikipedia titles](https://dumps.wikimedia.org/) on 2018-09-20 (285 MiB, 21.2 bytes/key)
+  - **IPA:** 325,871 different Japanese words from
+    [IPAdic](https://taku910.github.io/mecab/) (3.7 MiB, 11.9 bytes/key)
+  - **Wiki:** 14,130,439 different
+    [English Wikipedia titles](https://dumps.wikimedia.org/) on 2018-09-20 (285
+    MiB, 21.2 bytes/key)
 - [Askitis's datasets](http://web.archive.org/web/20120206015921/http://www.naskitis.com/)
   - **Distinct:** 28,772,169 different english words (290 MiB, 10.6 bytes/key)
   - **Url:** 1,289,458 different URL strings (44 MiB, 36.2 bytes/key)
 
 ### Approach
 
-We constructed a dictionary from a dataset and measured the elapsed time. The dynamic dictionaries, Cedar and Tessil's containers, were constructed by inserting sorted keywords. Each keyword is associated with a unique ID of a 4-byte integer. Since all the libraries support serialization of the data structure, we measured the output file size as the memory usage.
+We constructed a dictionary from a dataset and measured the elapsed time. The
+dynamic dictionaries, Cedar and Tessil's containers, were constructed by
+inserting sorted keywords. Each keyword is associated with a unique ID of a
+4-byte integer. Since all the libraries support serialization of the data
+structure, we measured the output file size as the memory usage.
 
-The time to lookup IDs from keywords was measured for 1,000 query keywords randomly sampled from each dataset. Also, for some libraries supporting to decode keywords from IDs, the time was measured for the 1,000 IDs corresponding to the query keywords. We took the best result of 10 runs.
+The time to lookup IDs from keywords was measured for 1,000 query keywords
+randomly sampled from each dataset. Also, for some libraries supporting to
+decode keywords from IDs, the time was measured for the 1,000 IDs corresponding
+to the query keywords. We took the best result of 10 runs.
 
-The code of the benchmark can be found [here](https://github.com/kampersanda/fast_succinct_trie/tree/master/bench).
+The code of the benchmark can be found
+[here](https://github.com/kampersanda/fast_succinct_trie/tree/master/bench).
 
 ### Results
 
@@ -698,21 +785,46 @@ If you use the library in academic settings, please cite the following paper.
 
 ## References
 
-1. M. A. Martínez-Prieto, N. Brisaboa, R. Cánovas, F. Claude, and G. Navarro. **Practical compressed string dictionaries.** *Information Systems*, 56:73–108, 2016.
-2. S. Kanda, K. Morita, and M. Fuketa. **Compressed double-array tries for string dictionaries supporting fast lookup.** *Knowledge and Information Systems*, 51(3): 1023–1042, 2017.
-3. J. Aoe. **An efficient digital search algorithm by using a double-array structure.** *IEEE Transactions on Software Engineering*, 15(9): 1066–1077, 1989.
-4. S. Yata, M. Oono, K. Morita, M. Fuketa, T. Sumitomo, and J. Aoe. **A compact static double-array keeping character codes.** *Information Processing & Management*, 43(1): 237–247, 2007.
-5. I. Mülle, R. Cornelius, and F. Franz. **Adaptive string dictionary compression in in-memory column-store database systems.** In *Proc. EDBT*, pp. 283–294, 2014.
-6. S. Gog, GE. Pibiri, and R. Venturini. **Efficient and effective query auto-completion.** In *Proc. SIGIR*, pp. 2271–2280, 2020.
-7. R. Baeza-Yates, and B. Ribeiro-Neto. **Modern Information Retrieval.** 2nd ed. Addison Wesley, Boston, MA, USA, 2011.
-8. T. Kudo, T. Hanaoka, J. Mukai, Y. Tabata, and H. Komatsu. **Efficient dictionary and language model compression for input method editors.** In *Proc. WTIM*, pp. 19–25, 2011.
-9. N. R. Brisaboa, S. Ladra, and G. Navarro. **DACs: Bringing direct access to variable-length codes.** *Information Processing & Management*, 49(1): 392–404, 2013.
-10. S. Yata, M. Tamura, K. Morita, M. Fuketa and J. Aoe. **Sequential insertions and performance evaluations for double-arrays.** In *Proc. IPSJ*, pp. 1263–1264, 2009.
-12. N. Yoshinaga, and M. Kitsuregawa. **A self-adaptive classifier for efficient text-stream processing.** In *Proc. COLING*, pp. 1091–1102, 2014.
-13. G. Jacobson. **Space-efficient static trees and graphs.** In *Proc. FOCS*, pp. 549–554, 1989.
-14. S. Yata. **Dictionary compression by nesting prefix/patricia tries.** In *Proc. JNLP*, pp. 576–578, 2011.
-15. H. Zhang, H. Lim, V. Leis, DG. Andersen, M. Kaminsky, K. Keeton, and A. Pavlo. **Surf: Practical range query filtering with fast succinct tries.** In *Proc. SIGMOD*, pp. 323–336, 2018.
-16. R. Grossi, and G. Ottaviano. **Fast compressed tries through path decompositions.** *ACM Journal of Experimental Algorithmics*, 19, 2015.
-17. N. Askitis, and R. Sinha. **Engineering scalable, cache and space efficient tries for strings.** *The VLDB Journal*, *19*(5): 633-660, 2010.
-18. N. Askitis, and J. Zobel. **Cache-conscious collision resolution in string hash tables.** In *Proc. SPIRE*, pp. 91–102, 2005.
-
+1. M. A. Martínez-Prieto, N. Brisaboa, R. Cánovas, F. Claude, and G. Navarro.
+   **Practical compressed string dictionaries.** _Information Systems_,
+   56:73–108, 2016.
+2. S. Kanda, K. Morita, and M. Fuketa. **Compressed double-array tries for
+   string dictionaries supporting fast lookup.** _Knowledge and Information
+   Systems_, 51(3): 1023–1042, 2017.
+3. J. Aoe. **An efficient digital search algorithm by using a double-array
+   structure.** _IEEE Transactions on Software Engineering_, 15(9):
+   1066–1077, 1989.
+4. S. Yata, M. Oono, K. Morita, M. Fuketa, T. Sumitomo, and J. Aoe. **A compact
+   static double-array keeping character codes.** _Information Processing &
+   Management_, 43(1): 237–247, 2007.
+5. I. Mülle, R. Cornelius, and F. Franz. **Adaptive string dictionary
+   compression in in-memory column-store database systems.** In _Proc. EDBT_,
+   pp. 283–294, 2014.
+6. S. Gog, GE. Pibiri, and R. Venturini. **Efficient and effective query
+   auto-completion.** In _Proc. SIGIR_, pp. 2271–2280, 2020.
+7. R. Baeza-Yates, and B. Ribeiro-Neto. **Modern Information Retrieval.** 2nd
+   ed. Addison Wesley, Boston, MA, USA, 2011.
+8. T. Kudo, T. Hanaoka, J. Mukai, Y. Tabata, and H. Komatsu. **Efficient
+   dictionary and language model compression for input method editors.** In
+   _Proc. WTIM_, pp. 19–25, 2011.
+9. N. R. Brisaboa, S. Ladra, and G. Navarro. **DACs: Bringing direct access to
+   variable-length codes.** _Information Processing & Management_, 49(1):
+   392–404, 2013.
+10. S. Yata, M. Tamura, K. Morita, M. Fuketa and J. Aoe. **Sequential insertions
+    and performance evaluations for double-arrays.** In _Proc. IPSJ_, pp.
+    1263–1264, 2009.
+11. N. Yoshinaga, and M. Kitsuregawa. **A self-adaptive classifier for efficient
+    text-stream processing.** In _Proc. COLING_, pp. 1091–1102, 2014.
+12. G. Jacobson. **Space-efficient static trees and graphs.** In _Proc. FOCS_,
+    pp. 549–554, 1989.
+13. S. Yata. **Dictionary compression by nesting prefix/patricia tries.** In
+    _Proc. JNLP_, pp. 576–578, 2011.
+14. H. Zhang, H. Lim, V. Leis, DG. Andersen, M. Kaminsky, K. Keeton, and A.
+    Pavlo. **Surf: Practical range query filtering with fast succinct tries.**
+    In _Proc. SIGMOD_, pp. 323–336, 2018.
+15. R. Grossi, and G. Ottaviano. **Fast compressed tries through path
+    decompositions.** _ACM Journal of Experimental Algorithmics_, 19, 2015.
+16. N. Askitis, and R. Sinha. **Engineering scalable, cache and space efficient
+    tries for strings.** _The VLDB Journal_, _19_(5): 633-660, 2010.
+17. N. Askitis, and J. Zobel. **Cache-conscious collision resolution in string
+    hash tables.** In _Proc. SPIRE_, pp. 91–102, 2005.

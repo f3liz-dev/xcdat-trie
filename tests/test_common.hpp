@@ -50,13 +50,13 @@ std::vector<std::string> make_random_keys(std::uint64_t n, std::uint64_t min_m, 
                                           char min_c = 'A', char max_c = 'Z', std::uint64_t seed = 13) {
     std::mt19937_64 engine(seed);
     std::uniform_int_distribution<std::uint64_t> dist_m(min_m, max_m);
-    std::uniform_int_distribution<char> dist_c(min_c, max_c);
+    std::uniform_int_distribution<int> dist_c(static_cast<int>(min_c), static_cast<int>(max_c));
 
     std::vector<std::string> keys(n);
     for (std::uint64_t i = 0; i < n; i++) {
         keys[i].resize(dist_m(engine));
         for (std::uint64_t j = 0; j < keys[i].size(); j++) {
-            keys[i][j] = dist_c(engine);
+            keys[i][j] = static_cast<char>(dist_c(engine));
         }
     }
     return keys;

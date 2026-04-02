@@ -1,0 +1,38 @@
+name: Meson
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  # Customize the build type here (release, debug, etc.)
+  BUILD_TYPE: release
+
+jobs:
+  build:
+    # The Meson build system is platform agnostic and should work equally
+    # well on Windows or Mac.  You can convert this to a matrix build if you need
+    # cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Meson and Ninja
+      run: pip install meson ninja
+
+    - name: Configure with Meson
+      # Setup Meson in a 'builddir' subdirectory with the specified build type
+      run: meson setup builddir --buildtype=${{env.BUILD_TYPE}}
+
+    - name: Build
+      # Build with Meson
+      run: meson compile -C builddir
+
+    - name: Test
+      # Run tests with Meson
+      run: meson test -C builddir
+      

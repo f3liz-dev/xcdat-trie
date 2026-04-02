@@ -343,7 +343,7 @@ class trie {
             }
         }
 
-        if (bin_mode() and itr->m_kpos == itr->m_key.size()) {
+        if (itr->m_kpos == itr->m_key.size()) {
             // Is the key terminated at an inner term?
             itr->is_end = true;
             itr->m_id = num_keys();
@@ -351,7 +351,7 @@ class trie {
         }
 
         while (!m_bcvec.is_leaf(itr->m_npos)) {
-            if (bin_mode() and itr->m_kpos == itr->m_key.size()) {
+            if (itr->m_kpos == itr->m_key.size()) {
                 // Is the key terminated at an internal node (not term)?
                 itr->is_end = true;
                 itr->m_id = num_keys();
