@@ -3,8 +3,9 @@
 [![Meson](https://github.com/f3liz-dev/xcdat-trie/actions/workflows/build.yml/badge.svg)](https://github.com/f3liz-dev/xcdat-trie/actions/workflows/build.yml)
 
 > [!NOTE]
-> This repository is forked from [kampersanda/xcdat](https://github.com/kampersanda/xcdat) 
-> Thanks to kampersanda for this great work!
+> This repository is forked from
+> [kampersanda/xcdat](https://github.com/kampersanda/xcdat).\
+> Thanks to kampersanda for this great work!\
 > In under there, it contains original text with modification for meson build.
 
 **Xcdat** is a C++17 header-only library of a fast compressed string dictionary
