@@ -2,6 +2,11 @@
 
 [![Meson](https://github.com/f3liz-dev/xcdat-trie/actions/workflows/build.yml/badge.svg)](https://github.com/f3liz-dev/xcdat-trie/actions/workflows/build.yml)
 
+> [!NOTE]
+> This repository is forked from [kampersanda/xcdat](https://github.com/kampersanda/xcdat) 
+> Thanks to kampersanda for this great work!
+> In under there, it contains original text with modification for meson build.
+
 **Xcdat** is a C++17 header-only library of a fast compressed string dictionary
 based on an improved double-array trie structure described in the paper:
 [Compressed double-array tries for string dictionaries supporting fast lookup](https://doi.org/10.1007/s10115-016-0999-8),
