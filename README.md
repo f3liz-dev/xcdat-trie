@@ -1,6 +1,6 @@
 # Xcdat: Fast compressed trie dictionary library
 
-![build status](https://github.com/kampersanda/xcdat/actions/workflows/build.yml/badge.svg)
+[![Meson](https://github.com/f3liz-dev/xcdat-trie/actions/workflows/build.yml/badge.svg)](https://github.com/f3liz-dev/xcdat-trie/actions/workflows/build.yml)
 
 **Xcdat** is a C++17 header-only library of a fast compressed string dictionary
 based on an improved double-array trie structure described in the paper:
